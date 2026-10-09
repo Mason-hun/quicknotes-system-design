@@ -28,6 +28,7 @@ async function request(url, options = {}) {
 }
 
 // Render notes in the interface
+
 function renderNotes(notes) {
     notesList.textContent = "";
 
@@ -47,12 +48,23 @@ function renderNotes(notes) {
         const body = document.createElement("p");
         body.textContent = note.body || "";
 
+        const deleteButton = document.createElement("button");
+        deleteButton.type = "button";
+        deleteButton.textContent = "Delete";
+        deleteButton.className = "delete-btn";
+
+        deleteButton.addEventListener("click", function () {
+            deleteNote(note.id, deleteButton);
+        });
+
         listItem.appendChild(title);
         listItem.appendChild(body);
+        listItem.appendChild(deleteButton);
 
         notesList.appendChild(listItem);
     });
 }
+
 
 // GET: Load notes from the API
 async function loadNotes() {
@@ -138,6 +150,38 @@ async function createNote(event) {
         submitButton.disabled = false;
     }
 }
+
+
+async function deleteNote(noteId, deleteButton) {
+    deleteButton.disabled = true;
+
+    statusText.textContent = "Deleting note...";
+    statusText.className = "status loading";
+
+    try {
+        await request(`${API_URL}/${noteId}`, {
+            method: "DELETE"
+        });
+
+        notes = notes.filter(function (note) {
+            return note.id !== noteId;
+        });
+
+        renderNotes(notes);
+
+        statusText.textContent = "Note deleted successfully.";
+        statusText.className = "status success";
+    } catch (error) {
+        statusText.textContent =
+            "Could not delete the note. Please try again.";
+        statusText.className = "status error";
+
+        console.error(error);
+
+        deleteButton.disabled = false;
+    }
+}
+
 
 // Event listeners
 loadButton.addEventListener("click", loadNotes);
