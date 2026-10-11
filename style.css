@@ -202,6 +202,15 @@ textarea:focus {
     color: var(--loading-color);
 }
 
+.delete-btn {
+    margin-top: 0.75rem;
+    background-color: #dc2626;
+}
+
+.delete-btn:hover:not(:disabled) {
+    background-color: #b91c1c;
+}
+
 footer {
     width: min(900px, 92%);
     margin: 0 auto;
